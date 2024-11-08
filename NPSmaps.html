@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no">
+  <title>ArcGIS API for JavaScript: Add layers to a map</title>
+  <style>
+    html, body, #viewDiv {
+      padding: 0;
+      margin: 0;
+      height: 100%;
+      width: 100%;
+    }
+  </style>
+  <link rel="stylesheet" href="https://js.arcgis.com/4.29/esri/css/main.css">
+  <script src="https://js.arcgis.com/4.29/"></script>
+
+  <script>
+    require([
+      "esri/Map",
+      "esri/views/MapView",
+      "esri/layers/FeatureLayer"
+
+    ], function(Map, MapView, FeatureLayer) {
+      
+      var map = new Map({
+        basemap: "topo-vector"
+      });
+
+      var view = new MapView({
+        container: "viewDiv",  
+        map: map,
+        center: [-111.64,47.0],
+        zoom: 4            
+      });
+
+
+     
+
+// Monumentation feature layer (points)
+var MonumentationLayer = new FeatureLayer({
+ url: 
+"https://mapservices.nps.gov/arcgis/rest/services/Monumentation/NPSMonumentation/FeatureServer"
+	    });
+  map.add(MonumentationLayer);
+
+// NPS Public Trails feature layer (lines)
+      var PublicTrailsLayer = new FeatureLayer({
+        url: "https://mapservices.nps.gov/arcgis/rest/services/NationalDatasets/NPS_Public_Trails_Geographic/FeatureServer"
+      });
+
+      map.add(PublicTrailsLayer, 0);
+
+      // Wilderness Boundary (polygons)
+      var WildernessBoundaryLayer = new FeatureLayer({
+        url: "https://mapservices.nps.gov/arcgis/rest/services/Wilderness/Wilderness/FeatureServer"
+      });
+
+      map.add(WildernessBoundaryLayer);
+
+});
+  </script>
+</head>
+<body>
+  <div id="viewDiv"></div>
+</body>
+</html> 

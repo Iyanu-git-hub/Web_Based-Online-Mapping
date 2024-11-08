@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="initial-scale=1,maximum-scale=1,user-scalable=no"
+    />
+    
+<title>NPS Public POIs</title>
+    <style>
+      html,
+      body,
+      #viewDiv {
+        padding: 0;
+        margin: 0;
+        height: 100%;
+        width: 100%;
+      }
+    </style>
+
+    <link
+      rel="stylesheet"
+      href="https://js.arcgis.com/4.29/esri/themes/light/main.css"
+    />
+    <script src="https://js.arcgis.com/4.29/"></script>
+
+    <script> 
+      require([
+        "esri/Map",
+        "esri/views/MapView",
+        "esri/layers/FeatureLayer",
+        "esri/widgets/Legend"
+        ], function(Map, MapView, FeatureLayer, Legend) {
+        const category = document.getElementById("category").text;
+        const map = new Map({
+        basemap: "gray-vector"   
+        });
+
+        const view = new MapView({
+          container: "viewDiv",
+          map: map,
+          center: [-111.64, 47], 
+          zoom: 3
+        });
+
+        const symbolCats = [
+          "airport",
+          "campground",
+          "hospital",
+          "hotel",
+          "restroom",
+          "post-office",
+          "house"
+          ];
+
+        rendererInfos = symbolCats.map((symCat) => {
+          return {
+            value: symCat,
+            symbol: {
+              type: "web-style",
+              name: symCat,
+              styleName: "Esri2DPointSymbolsStyle"
+            },
+            label: symCat
+          };
+        });
+
+       const renderer = {
+          type: "unique-value", // autocasts as new UniqueValueRenderer()
+          valueExpression: category,
+          valueExpressionTitle: "Symbol Categories",
+          uniqueValueInfos: rendererInfos 
+        };
+		
+        var NPSPOIs = {
+        "title": "{UNITNAME}",
+        "content": "<b>POI TYPE:</b> {POITYPE}"
+      }
+	  
+        const featureLayer = new FeatureLayer({
+          url:
+            " https://mapservices.nps.gov/arcgis/rest/services/NationalDatasets/NPS_Public_POIs_Geographic/FeatureServer",
+          renderer: renderer,
+         outFields: ["POITYPE"],
+         popupTemplate: NPSPOIs
+        });
+
+        map.add(featureLayer);
+
+       const legend = new Legend({
+          view: view
+        });
+
+        view.ui.add(legend, "bottom-right");
+      });
+    </script>
+    
+<script type="text/plain" id="category">
+      if($feature.POITYPE == "Airport"){
+        return "airport"
+      }
+     else if($feature.POITYPE == "Campground"){
+        return "campground"
+      }
+      else if($feature.POITYPE == "Hospital"){
+        return "hospital"
+      }
+      else if($feature.POITYPE == "Lodge"|| $feature.POITYPE == "Lodging"){
+        return "hotel"
+      }
+      else if($feature.POITYPE == "Restroom"){
+        return "restroom"
+      }
+      else if($feature.POITYPE == "Post Office"){
+        return "post-office"
+      }
+      else if($feature.POITYPE == "Visitor Center"){
+        return "house"
+      }
+      </script> 	
+  </head>
+
+  <body>
+    <div id="viewDiv" class="esri-widget"></div>
+  </body>
+  
+</html>
